@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AddTaskForm from "./components/AddTaskForm";
 import TaskList from "./components/TaskList";
-import "./App.css";
+// import "./App.css";
 
 const API_BASE = "https://tdl-0j04.onrender.com"; // your backend URL
 
