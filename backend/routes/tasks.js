@@ -15,8 +15,8 @@ router.get("/", async (req, res) => {
 // Add new task
 router.post("/", async (req, res) => {
   try {
-    const { title, description } = req.body;
-    const newTask = new Task({ title, description });
+    const { title } = req.body;
+    const newTask = new Task({ title });
     await newTask.save();
     res.status(201).json(newTask);
   } catch (err) {
