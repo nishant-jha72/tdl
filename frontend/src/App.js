@@ -6,7 +6,6 @@ import "./App.css";
 function App() {
   const [tasks, setTasks] = useState([]);
 
-  // Fetch tasks from backend
   const fetchTasks = async () => {
     const res = await fetch("https://tdl-0j04.onrender.com/tasks");
     const data = await res.json();
@@ -17,7 +16,6 @@ function App() {
     fetchTasks();
   }, []);
 
-  // Add new task
   const addTask = async (title) => {
     const res = await fetch("https://tdl-0j04.onrender.com/tasks", {
       method: "POST",
@@ -28,7 +26,6 @@ function App() {
     setTasks([...tasks, data]);
   };
 
-  // Mark task completed
   const completeTask = async (id) => {
     const description = prompt("Add a description for this task:", "na") || "na";
     const res = await fetch(`https://tdl-0j04.onrender.com/tasks/${id}/complete`, {
@@ -40,7 +37,6 @@ function App() {
     setTasks(tasks.map((t) => (t._id === id ? data : t)));
   };
 
-  // Delete task
   const deleteTask = async (id) => {
     await fetch(`https://tdl-0j04.onrender.com/tasks/${id}`, { method: "DELETE" });
     setTasks(tasks.filter((t) => t._id !== id));
@@ -64,20 +60,12 @@ function App() {
         <div className="task-sections">
           <div className="tasks-due">
             <h2>Due Tasks</h2>
-            <TaskList
-              tasks={dueTasks}
-              onComplete={completeTask}
-              onDelete={deleteTask}
-            />
+            <TaskList tasks={dueTasks} onComplete={completeTask} onDelete={deleteTask} />
           </div>
 
           <div className="tasks-completed">
             <h2>Completed Tasks</h2>
-            <TaskList
-              tasks={completedTasks}
-              onComplete={completeTask}
-              onDelete={deleteTask}
-            />
+            <TaskList tasks={completedTasks} onComplete={completeTask} onDelete={deleteTask} />
           </div>
         </div>
       </div>
