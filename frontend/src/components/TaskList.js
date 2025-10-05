@@ -8,9 +8,7 @@ function TaskList({ tasks, onComplete, onDelete }) {
           <div className="task-title">{task.title}</div>
           {task.completed && <div className="task-desc">Description: {task.description}</div>}
           <div className="task-buttons">
-            {!task.completed && (
-              <button onClick={() => onComplete(task._id)}>Complete</button>
-            )}
+            {!task.completed && <button onClick={() => onComplete(task._id)}>Complete</button>}
             <button onClick={() => onDelete(task._id)}>Delete</button>
           </div>
         </li>
