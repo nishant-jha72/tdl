@@ -26,6 +26,15 @@ function App() {
     setTasks([...tasks, data]);
   };
 
+  const undoTask = async (id) => {
+  const res = await fetch(`https://tdl-0j04.onrender.com/tasks/${id}/undo`, {
+    method: "PUT",
+  });
+  const data = await res.json();
+  setTasks(tasks.map((t) => (t._id === id ? data : t)));
+};
+
+  
   const completeTask = async (id) => {
     const description = prompt("Add a description for this task:", "na") || "na";
     const res = await fetch(`https://tdl-0j04.onrender.com/tasks/${id}/complete`, {
