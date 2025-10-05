@@ -6,9 +6,19 @@ function TaskList({ tasks, onComplete, onDelete, onUndo }) {
       {tasks.map((task) => (
         <li key={task._id} className={task.completed ? "completed" : ""}>
           <div className="task-title">{task.title}</div>
+
           {task.completed && (
-            <div className="task-desc">Description: {task.description}</div>
+            <>
+              <div className="task-desc">Description: {task.description}</div>
+              {task.completedAt && (
+                <div className="task-date">
+                  Completed on:{" "}
+                  {new Date(task.completedAt).toLocaleDateString()}
+                </div>
+              )}
+            </>
           )}
+
           <div className="task-buttons">
             {!task.completed && (
               <button onClick={() => onComplete(task._id)}>Complete</button>
