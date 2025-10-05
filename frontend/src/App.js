@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AddTaskForm from "./components/AddTaskForm";
 import TaskList from "./components/TaskList";
 import "./App.css";
@@ -6,92 +6,79 @@ import "./App.css";
 function App() {
   const [tasks, setTasks] = useState([]);
 
+  // Fetch tasks from backend
   const fetchTasks = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/tasks");
-      const data = await response.json();
-      setTasks(data);
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
-    }
+    const res = await fetch("http://localhost:5000/tasks"); // change to deployed backend URL if needed
+    const data = await res.json();
+    setTasks(data);
   };
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  const addTask = (newTask) => {
-    setTasks((prev) => [...prev, newTask]);
+  // Add new task
+  const addTask = async (title) => {
+    const res = await fetch("http://localhost:5000/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+    const data = await res.json();
+    setTasks([...tasks, data]);
   };
 
-  // 🔹 Modified toggleComplete function
-  const toggleComplete = async (id, currentStatus) => {
-    try {
-      let description = "N/A";
-
-      // Ask only when marking as completed
-      if (!currentStatus) {
-        description = prompt("Add a description for this completed task:", "");
-        if (!description || description.trim() === "") description = "N/A";
-      }
-
-      const response = await fetch(`http://localhost:5000/tasks/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !currentStatus, description }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update task");
-
-      const updatedTask = await response.json();
-
-      setTasks((prev) =>
-        prev.map((task) => (task._id === id ? updatedTask : task))
-      );
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
+  // Mark task completed
+  const completeTask = async (id) => {
+    const description = prompt("Add a description for this task:", "na") || "na";
+    const res = await fetch(`http://localhost:5000/tasks/${id}/complete`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description }),
+    });
+    const data = await res.json();
+    setTasks(tasks.map((t) => (t._id === id ? data : t)));
   };
 
+  // Delete task
   const deleteTask = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:5000/tasks/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete task");
-
-      setTasks((prev) => prev.filter((task) => task._id !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
+    await fetch(`http://localhost:5000/tasks/${id}`, { method: "DELETE" });
+    setTasks(tasks.filter((t) => t._id !== id));
   };
 
-  const workTodo = tasks.filter((task) => !task.completed);
-  const workDone = tasks.filter((task) => task.completed);
+  const dueTasks = tasks.filter((t) => !t.completed);
+  const completedTasks = tasks.filter((t) => t.completed);
 
   return (
-    <div className="container">
-      <h1 className="title">📝 RUMMMY KA KAAM</h1>
-      <AddTaskForm addTask={addTask} />
+    <div className="app">
+      <div className="background-video">
+        <video autoPlay loop muted>
+          <source src="/background.mp4" type="video/mp4" />
+        </video>
+      </div>
 
-      <div className="task-grid">
-        <div className="task-section">
-          <h2>⏳ Due Tasks</h2>
-          <TaskList
-            tasks={workTodo}
-            toggleComplete={toggleComplete}
-            deleteTask={deleteTask}
-          />
-        </div>
+      <div className="container">
+        <h1>My Todo App</h1>
+        <AddTaskForm addTask={addTask} />
 
-        <div className="task-section completed-section">
-          <h2>✅ Completed Tasks</h2>
-          <TaskList
-            tasks={workDone}
-            toggleComplete={toggleComplete}
-            deleteTask={deleteTask}
-          />
+        <div className="task-sections">
+          <div className="tasks-due">
+            <h2>Due Tasks</h2>
+            <TaskList
+              tasks={dueTasks}
+              onComplete={completeTask}
+              onDelete={deleteTask}
+            />
+          </div>
+
+          <div className="tasks-completed">
+            <h2>Completed Tasks</h2>
+            <TaskList
+              tasks={completedTasks}
+              onComplete={completeTask}
+              onDelete={deleteTask}
+            />
+          </div>
         </div>
       </div>
     </div>
