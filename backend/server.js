@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const tasksRoute = require("./routes/tasks");
+const Task = require("./models/Task");
 require("dotenv").config();
 
 const app = express();
@@ -28,7 +29,7 @@ const reopenTasks = async () => {
     const sixDaysAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
     await Task.updateMany(
       { completed: true, completedAt: { $lt: sixDaysAgo } },
-      { completed: false, completedAt: null }
+      { completed: false, completedAt: null, description: "" }
     );
     console.log("Reopened tasks older than 6 days");
   } catch (err) {
