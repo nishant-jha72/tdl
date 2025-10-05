@@ -2,64 +2,53 @@ const express = require("express");
 const router = express.Router();
 const Task = require("../models/Task");
 
-// ✅ Get all tasks
+// Get all tasks
 router.get("/", async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
     res.json(tasks);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching tasks" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Add new task
+// Add new task
 router.post("/", async (req, res) => {
   try {
     const { title, description } = req.body;
-    const newTask = new Task({ title, description: description || "N/A" });
+    const newTask = new Task({ title, description });
     await newTask.save();
     res.status(201).json(newTask);
-  } catch (error) {
-    res.status(500).json({ error: "Error adding task" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Mark task as complete
-router.put("/:id/complete", async (req, res) => {
+// Update task (completed or description)
+router.put("/:id", async (req, res) => {
   try {
-    const { description } = req.body;
-    const task = await Task.findByIdAndUpdate(
+    const { completed, completedAt, description } = req.body;
+    const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
-      { completed: true, completedAt: new Date(), description },
+      { 
+        ...(completed !== undefined && { completed, completedAt }),
+        ...(description !== undefined && { description })
+      },
       { new: true }
     );
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ error: "Error marking task complete" });
+    res.json(updatedTask);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Undo completed task
-router.put("/:id/undo", async (req, res) => {
-  try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { completed: false, completedAt: null },
-      { new: true }
-    );
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ error: "Error undoing task" });
-  }
-});
-
-// ✅ Delete task
+// Delete task
 router.delete("/:id", async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
-    res.json({ message: "Task deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Error deleting task" });
+    res.json({ message: "Task deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
