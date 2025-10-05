@@ -8,7 +8,7 @@ function App() {
 
   // Fetch tasks from backend
   const fetchTasks = async () => {
-    const res = await fetch("http://localhost:5000/tasks"); // change to deployed backend URL if needed
+    const res = await fetch("https://tdl-0j04.onrender.com/tasks");
     const data = await res.json();
     setTasks(data);
   };
@@ -19,7 +19,7 @@ function App() {
 
   // Add new task
   const addTask = async (title) => {
-    const res = await fetch("http://localhost:5000/tasks", {
+    const res = await fetch("https://tdl-0j04.onrender.com/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
@@ -31,7 +31,7 @@ function App() {
   // Mark task completed
   const completeTask = async (id) => {
     const description = prompt("Add a description for this task:", "na") || "na";
-    const res = await fetch(`http://localhost:5000/tasks/${id}/complete`, {
+    const res = await fetch(`https://tdl-0j04.onrender.com/tasks/${id}/complete`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ description }),
@@ -42,7 +42,7 @@ function App() {
 
   // Delete task
   const deleteTask = async (id) => {
-    await fetch(`http://localhost:5000/tasks/${id}`, { method: "DELETE" });
+    await fetch(`https://tdl-0j04.onrender.com/tasks/${id}`, { method: "DELETE" });
     setTasks(tasks.filter((t) => t._id !== id));
   };
 
