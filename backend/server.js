@@ -15,7 +15,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // ✅ Import routes
-const taskRoutes = require("./routes/taskRoutes");
+const taskRoutes = require("./routes/tasks");
 app.use("/api/tasks", tasks);
 
 // ✅ CRON job: move tasks to "due" after 6 days
