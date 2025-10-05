@@ -8,34 +8,37 @@ router.get("/", async (req, res) => {
     const tasks = await Task.find();
     res.json(tasks);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 // Add a task
 router.post("/", async (req, res) => {
-  const { name, description } = req.body;
   try {
-    const newTask = new Task({ name, description });
-    await newTask.save();
-    res.status(201).json(newTask);
+    const { title, description } = req.body;
+    const task = new Task({
+      title,
+      description: description || "na"
+    });
+    await task.save();
+    res.status(201).json(task);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Update task (complete/incomplete + description)
-router.patch("/:id", async (req, res) => {
+// Mark as completed
+router.put("/:id/complete", async (req, res) => {
   try {
-    const { completed, description } = req.body;
-    const updated = await Task.findByIdAndUpdate(
+    const { description } = req.body;
+    const task = await Task.findByIdAndUpdate(
       req.params.id,
-      { completed, description },
+      { completed: true, description: description || "na" },
       { new: true }
     );
-    res.json(updated);
+    res.json(task);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -45,7 +48,7 @@ router.delete("/:id", async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Task deleted" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
