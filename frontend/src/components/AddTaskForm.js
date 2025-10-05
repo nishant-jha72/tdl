@@ -1,30 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function AddTaskForm({ addTask }) {
-  const [taskName, setTaskName] = useState('');
+  const [title, setTitle] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!taskName.trim()) return;
-
-    const response = await fetch('http://localhost:5000/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: taskName, completed: false }),
-    });
-
-    const data = await response.json();
-    addTask(data);
-    setTaskName('');
+    if (!title.trim()) return;
+    addTask(title);
+    setTitle("");
   };
 
   return (
     <form className="add-task-form" onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Add new task..."
-        value={taskName}
-        onChange={(e) => setTaskName(e.target.value)}
+        placeholder="Add a new task"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
       <button type="submit">Add</button>
     </form>
