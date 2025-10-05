@@ -1,20 +1,18 @@
-// Import dependencies
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-// Initialize app
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Debug: log Mongo URI (you can remove later)
+// Debug: check Mongo URI
 console.log("🔑 MONGO_URI:", process.env.MONGO_URI);
 
-// MongoDB Connection
+// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
@@ -26,7 +24,7 @@ app.use("/tasks", tasksRoute);
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("🚀 Backend is running successfully!");
+  res.send("🚀 Backend is running!");
 });
 
 // Start server
