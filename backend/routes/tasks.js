@@ -4,52 +4,34 @@ const Task = require("../models/Task");
 
 // Get all tasks
 router.get("/", async (req, res) => {
-  try {
-    const tasks = await Task.find();
-    res.json(tasks);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const tasks = await Task.find().sort({ createdAt: -1 });
+  res.json(tasks);
 });
 
-// Add a task
+// Add new task
 router.post("/", async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    const task = new Task({
-      title,
-      description: description || "na"
-    });
-    await task.save();
-    res.status(201).json(task);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { title } = req.body;
+  const task = new Task({ title });
+  await task.save();
+  res.json(task);
 });
 
-// Mark as completed
+// Mark task completed
 router.put("/:id/complete", async (req, res) => {
-  try {
-    const { description } = req.body;
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { completed: true, description: description || "na" },
-      { new: true }
-    );
-    res.json(task);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { description } = req.body;
+  const task = await Task.findById(req.params.id);
+  if (!task) return res.status(404).json({ msg: "Task not found" });
+
+  task.completed = true;
+  task.description = description || "na";
+  await task.save();
+  res.json(task);
 });
 
 // Delete task
 router.delete("/:id", async (req, res) => {
-  try {
-    await Task.findByIdAndDelete(req.params.id);
-    res.json({ message: "Task deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await Task.findByIdAndDelete(req.params.id);
+  res.json({ msg: "Task deleted" });
 });
 
 module.exports = router;
