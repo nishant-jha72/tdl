@@ -1,57 +1,44 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+const dotenv = require("dotenv");
+const path = require("path");
 const cron = require("node-cron");
-const Task = require("./models/Task");
 
+dotenv.config();
 const app = express();
-
-// Middleware
-app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.log("❌ MongoDB Error:", err));
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.log(err));
 
-// Cron job: runs every day at midnight
+// ✅ Import routes
+const taskRoutes = require("./routes/taskRoutes");
+app.use("/api/tasks", taskRoutes);
+
+// ✅ CRON job: move tasks to "due" after 6 days
+const Task = require("./models/Task");
 cron.schedule("0 0 * * *", async () => {
-  const sixDaysAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
-  try {
-    const result = await Task.updateMany(
-      { completed: true, updatedAt: { $lte: sixDaysAgo } },
-      { completed: false }
-    );
-    if (result.modifiedCount > 0) {
-      console.log(`🔄 Reset ${result.modifiedCount} tasks to Due Tasks`);
-    }
-  } catch (err) {
-    console.error("❌ Cron job error:", err);
-  }
+  const today = new Date();
+  const sixDaysAgo = new Date(today);
+  sixDaysAgo.setDate(today.getDate() - 6);
+
+  await Task.updateMany(
+    { status: "pending", createdAt: { $lte: sixDaysAgo } },
+    { status: "due" }
+  );
+  console.log("⏰ Updated due tasks successfully!");
 });
 
-// Routes
-const tasksRoute = require("./routes/tasks");
-app.use("/tasks", tasksRoute);
-
-// Default route
-app.get("/", (req, res) => res.send("🚀 Backend is running!"));
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve frontend build files
+// ✅ Serve React frontend build
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
 });
 
-// Start server
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`⚡ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
