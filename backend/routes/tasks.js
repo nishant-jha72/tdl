@@ -43,6 +43,19 @@ router.put("/:id/undo", async (req, res) => {
   await task.save();
   res.json(task);
 });
+// Complete task
+router.put("/:id/complete", async (req, res) => {
+  const { description } = req.body;
+  const task = await Task.findById(req.params.id);
+  if (!task) return res.status(404).json({ msg: "Task not found" });
+
+  task.completed = true;
+  task.description = description || "na";
+  task.completedAt = new Date(); // 🆕 Store current date
+  await task.save();
+  res.json(task);
+});
+
 
 
 module.exports = router;
