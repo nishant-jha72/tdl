@@ -1,117 +1,88 @@
 import React, { useEffect, useState } from "react";
-import AddTaskForm from "./components/AddTaskForm";
-import TaskList from "./components/TaskList";
-// import "./App.css";
+import axios from "axios";
+import "./App.css";
 
-const API_BASE = "https://tdl-0j04.onrender.com"; // your backend URL
+const API_BASE = "https://tdl-0j04.onrender.com"; // replace with your backend URL
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [searchDue, setSearchDue] = useState("");
-  const [searchCompleted, setSearchCompleted] = useState("");
-
-  // ✅ Fetch all tasks
-  const fetchTasks = async () => {
-    const res = await fetch(`${API_BASE}/tasks`);
-    const data = await res.json();
-    setTasks(data);
-  };
+  const [newTask, setNewTask] = useState("");
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  // ✅ Add new task
-  const addTask = async (title, description) => {
-    const res = await fetch(`${API_BASE}/tasks`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description }),
-    });
-    const data = await res.json();
-    setTasks([data, ...tasks]);
+  const fetchTasks = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/tasks`);
+      setTasks(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // ✅ Mark task as completed
-  const completeTask = async (id) => {
-    const description = prompt("Enter a completion note:", "N/A");
-    const res = await fetch(`${API_BASE}/tasks/${id}/complete`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ description }),
-    });
-    const data = await res.json();
-    setTasks(tasks.map((t) => (t._id === id ? data : t)));
+  const addTask = async (e) => {
+    e.preventDefault();
+    if (!newTask.trim()) return;
+    try {
+      await axios.post(`${API_BASE}/tasks`, { title: newTask });
+      setNewTask("");
+      fetchTasks();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // ✅ Undo completed task
-  const undoTask = async (id) => {
-    const res = await fetch(`${API_BASE}/tasks/${id}/undo`, { method: "PUT" });
-    const data = await res.json();
-    setTasks(tasks.map((t) => (t._id === id ? data : t)));
-  };
-
-  // ✅ Delete task
   const deleteTask = async (id) => {
-    await fetch(`${API_BASE}/tasks/${id}`, { method: "DELETE" });
-    setTasks(tasks.filter((t) => t._id !== id));
+    try {
+      await axios.delete(`${API_BASE}/tasks/${id}`);
+      fetchTasks();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // ✅ Filter tasks
-  const dueTasks = tasks.filter(
-    (t) => !t.completed && t.title.toLowerCase().includes(searchDue.toLowerCase())
-  );
-  const completedTasks = tasks.filter(
-    (t) => t.completed && t.title.toLowerCase().includes(searchCompleted.toLowerCase())
-  );
+  const toggleComplete = async (task) => {
+    try {
+      await axios.put(`${API_BASE}/tasks/${task._id}`, { completed: !task.completed });
+      fetchTasks();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <div className="App">
-      <div className="header">
-        <h1>📝 Smart Task Manager</h1>
-      </div>
+    <div className="app-container">
+      <video className="background-video" autoPlay loop muted>
+        <source src="/background.mp4" type="video/mp4" />
+      </video>
+      <h1>My To-Do List</h1>
 
-      <AddTaskForm onAdd={addTask} />
+      <form className="add-task-form" onSubmit={addTask}>
+        <input
+          type="text"
+          placeholder="Add a new task..."
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+        />
+        <button type="submit">Add</button>
+      </form>
 
-      <div className="search-section">
-        <div>
-          <h2>Due Tasks</h2>
-          <input
-            type="text"
-            placeholder="Search Due Tasks..."
-            value={searchDue}
-            onChange={(e) => setSearchDue(e.target.value)}
-          />
-        </div>
-        <div>
-          <h2>Completed Tasks</h2>
-          <input
-            type="text"
-            placeholder="Search Completed Tasks..."
-            value={searchCompleted}
-            onChange={(e) => setSearchCompleted(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="tasks-container">
-        <div className="task-section due">
-          <TaskList
-            title="Due Tasks"
-            tasks={dueTasks}
-            onComplete={completeTask}
-            onDelete={deleteTask}
-          />
-        </div>
-
-        <div className="task-section completed">
-          <TaskList
-            title="Completed Tasks"
-            tasks={completedTasks}
-            onUndo={undoTask}
-            onDelete={deleteTask}
-          />
-        </div>
+      <div className="task-list">
+        {tasks.map((task) => (
+          <div
+            key={task._id}
+            className={`task-card ${task.completed ? "completed" : ""}`}
+          >
+            <span>{task.title}</span>
+            <div className="task-actions">
+              <button onClick={() => toggleComplete(task)}>
+                {task.completed ? "Undo" : "Done"}
+              </button>
+              <button onClick={() => deleteTask(task._id)}>Delete</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
