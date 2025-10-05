@@ -1,111 +1,164 @@
-body, html, #root, .app {
+/* ===== Global Styles ===== */
+body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  height: 100%;
-}
-.search-box {
-  width: 90%;
-  padding: 8px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.task-date {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.background-video video {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  filter: brightness(50%);
+  font-family: 'Poppins', sans-serif;
+  background: #f5f6fa;
+  color: #333;
 }
 
 .container {
-  position: relative;
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  color: #fff;
 }
 
-.add-task-form {
-  display: flex;
+/* ===== Header ===== */
+header {
+  background: #4a90e2;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 10px;
   margin-bottom: 20px;
 }
-.add-task-form input {
-  flex: 1;
-  padding: 10px;
+
+/* ===== Buttons ===== */
+button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 15px;
   border: none;
-  border-radius: 5px 0 0 5px;
-}
-.add-task-form button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 0 5px 5px 0;
-  background: #28a745;
-  color: #fff;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
 }
 
-.task-sections {
+button:hover {
+  background-color: #3a7ad9;
+  transform: scale(1.02);
+}
+
+button.delete {
+  background-color: #e74c3c;
+}
+
+button.delete:hover {
+  background-color: #c0392b;
+}
+
+button.done {
+  background-color: #2ecc71;
+}
+
+button.done:hover {
+  background-color: #27ae60;
+}
+
+/* ===== Task Input Form ===== */
+.task-form {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.tasks-due, .tasks-completed {
-  flex: 1;
-  min-width: 300px;
-  background: rgba(0,0,0,0.5);
-  padding: 15px;
-  border-radius: 10px;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.task-list {
-  list-style: none;
-  padding: 0;
-}
-.task-list li {
-  background: rgba(255,255,255,0.1);
+.task-form input,
+.task-form textarea {
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
 }
-.task-list li.completed {
-  background: rgba(40,167,69,0.6);
+
+.task-form input:focus,
+.task-form textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
 }
-.task-title {
-  font-weight: bold;
+
+/* ===== Task List ===== */
+.task-list {
+  margin-top: 30px;
 }
-.task-desc {
-  font-size: 0.9em;
-  margin-top: 5px;
+
+.task {
+  background: white;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
-.task-buttons {
-  margin-top: 5px;
+
+.task:hover {
+  transform: scale(1.01);
 }
-.task-buttons button {
-  margin-right: 5px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.task-buttons button:hover {
-  opacity: 0.8;
+
+.task h3 {
+  margin: 0;
+  font-size: 1.2rem;
 }
-.task-buttons button:first-child {
-  background: #007bff;
-  color: #fff;
+
+.task p {
+  margin: 5px 0;
+  color: #555;
 }
-.task-buttons button:last-child {
-  background: #dc3545;
-  color: #fff;
+
+/* Completed task style */
+.task.completed {
+  background-color: #ecf9f1;
+  border-left: 5px solid #2ecc71;
+}
+
+.task.completed h3 {
+  text-decoration: line-through;
+  color: #777;
+}
+
+/* ===== Search Bar ===== */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 2px solid #4a90e2;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .task-form {
+    padding: 15px;
+  }
+
+  header {
+    font-size: 1.2rem;
+  }
+
+  .task {
+    padding: 12px;
+  }
+
+  button {
+    font-size: 0.9rem;
+  }
 }
