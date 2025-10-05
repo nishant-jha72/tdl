@@ -12,32 +12,28 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add a new task
+// Add a task
 router.post("/", async (req, res) => {
-  const task = new Task({
-    name: req.body.name,
-    completed: req.body.completed || false,
-    description: req.body.description || "N/A",
-  });
-
+  const { name, description } = req.body;
   try {
-    const newTask = await task.save();
+    const newTask = new Task({ name, description });
+    await newTask.save();
     res.status(201).json(newTask);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-// Update task (mark complete + add description)
+// Update task (complete/incomplete + description)
 router.patch("/:id", async (req, res) => {
   try {
     const { completed, description } = req.body;
-    const task = await Task.findByIdAndUpdate(
+    const updated = await Task.findByIdAndUpdate(
       req.params.id,
       { completed, description },
       { new: true }
     );
-    res.json(task);
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
