@@ -70,9 +70,12 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Background Video */}
       <video className="background-video" autoPlay loop muted>
         <source src="/background.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
       </video>
+
       <h1>My To-Do List</h1>
 
       <form className="add-task-form" onSubmit={addTask}>
@@ -104,10 +107,6 @@ function App() {
             </div>
           ))}
         </div>
-        <video className="background-video" autoPlay loop muted>
-  <source src={`${process.env.PUBLIC_URL}/background.mp4`} type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
 
         {/* Completed Tasks */}
         <div className="task-section">
