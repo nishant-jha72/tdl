@@ -71,11 +71,16 @@ function App() {
             <h2>Due Tasks</h2>
             <TaskList tasks={dueTasks} onComplete={completeTask} onDelete={deleteTask} />
           </div>
+<div className="tasks-completed">
+  <h2>Completed Tasks</h2>
+  <TaskList
+    tasks={completedTasks}
+    onComplete={completeTask}
+    onDelete={deleteTask}
+    onUndo={undoTask}  // ← Add this line
+  />
+</div>
 
-          <div className="tasks-completed">
-            <h2>Completed Tasks</h2>
-            <TaskList tasks={completedTasks} onComplete={completeTask} onDelete={deleteTask} />
-          </div>
         </div>
       </div>
     </div>
