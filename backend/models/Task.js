@@ -1,9 +1,13 @@
 const mongoose = require("mongoose");
 
-const TaskSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, default: "na" },
-  completed: { type: Boolean, default: false },
-}, { timestamps: true }); // Adds createdAt and updatedAt
+const taskSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, default: "na" },
+    completed: { type: Boolean, default: false },
+    completedAt: { type: Date, default: null }, // 🆕 Added
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("Task", taskSchema);
