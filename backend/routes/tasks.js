@@ -33,5 +33,16 @@ router.delete("/:id", async (req, res) => {
   await Task.findByIdAndDelete(req.params.id);
   res.json({ msg: "Task deleted" });
 });
+// UNDO TASK
+// Undo completed task
+router.put("/:id/undo", async (req, res) => {
+  const task = await Task.findById(req.params.id);
+  if (!task) return res.status(404).json({ msg: "Task not found" });
+
+  task.completed = false;
+  await task.save();
+  res.json(task);
+});
+
 
 module.exports = router;
